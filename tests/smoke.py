@@ -17,6 +17,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+for _stream in (sys.stdout, sys.stderr):   # Windows 控制台不是 UTF-8 时，打印中文会报错
+    _stream.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = Path(__file__).resolve().parent.parent
 S = ROOT / "koubo-video" / "scripts"
 FIXTURE = ROOT / "tests" / "fixtures" / "speech.m4a"
