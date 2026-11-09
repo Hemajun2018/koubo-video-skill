@@ -26,7 +26,7 @@ import vdp_common as C  # noqa: E402
 UA = {"User-Agent": "koubo-video-setup"}
 HF_HOSTS = ("https://huggingface.co", "https://hf-mirror.com")   # 国内连不上 huggingface 时用镜像
 FFMPEG_WIN = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
-WHISPER_API = "https://api.github.com/repos/ggml-org/whisper.cpp/releases/latest"
+WHISPER_API = "https://api.github.com/repos/ggml-org/whisper.cpp/releases?per_page=20"
 NOTO_URL = ("https://github.com/notofonts/noto-cjk/raw/main/Sans/OTF/SimplifiedChinese/"
             "NotoSansCJKsc-Bold.otf")
 TEMPLATES = C.SKILL_DIR / "templates"
@@ -165,11 +165,14 @@ def win_ffmpeg():
 
 
 def win_whisper():
+    # 版本号 release（v1.9.x）常常不带文件，编译好的程序在同时发布的 b#### release 里：取最新一个带 Windows 构建的
+    import platform
+    want = "whisper-bin-win-cpu-arm64.zip" if platform.machine().upper() in ("ARM64", "AARCH64") else "whisper-bin-x64.zip"
     req = urllib.request.Request(WHISPER_API, headers=UA)
-    rel = json.loads(urllib.request.urlopen(req, timeout=60).read())
-    asset = next((a for a in rel["assets"] if a["name"] == "whisper-bin-x64.zip"), None)
+    releases = json.loads(urllib.request.urlopen(req, timeout=60).read())
+    rel, asset = next(((r, a) for r in releases for a in r.get("assets", []) if a["name"] == want), (None, None))
     if not asset:
-        raise RuntimeError(f"whisper.cpp {rel.get('tag_name')} 没有 whisper-bin-x64.zip，请到 "
+        raise RuntimeError(f"最近的 whisper.cpp release 里都没有 {want}，请到 "
                            "https://github.com/ggml-org/whisper.cpp/releases 手动下载")
     dest = C.TOOL_HOME / "bin" / "whisper"
     z = download(asset["browser_download_url"], C.TOOL_HOME / "downloads" / asset["name"], f"whisper {rel['tag_name']}")
