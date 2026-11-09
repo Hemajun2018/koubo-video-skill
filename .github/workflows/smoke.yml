@@ -1,0 +1,29 @@
+name: smoke
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Isolated tool home
+        run: echo "KOUBO_TOOL_HOME=${RUNNER_TEMP}/koubo-tools" >> "$GITHUB_ENV"
+      - name: Install dependencies (ffmpeg, whisper, tiny model)
+        run: python koubo-video/scripts/setup.py install --model tiny
+      - name: End-to-end smoke test
+        run: python tests/smoke.py --model tiny

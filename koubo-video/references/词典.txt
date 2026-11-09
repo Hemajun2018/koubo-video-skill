@@ -1,0 +1,20 @@
+# 基础热词：每行一个。这里只放跟 AI 和内容平台相关的通用词。
+# 你自己常说的人名、产品名写在 个人设置/词典.txt（会排在这些前面，更优先）。
+# whisper 提示词长度有限（约 160 字），只放最常说、最容易识别错的词。
+AI
+ChatGPT
+GPT
+OpenAI
+Codex
+Claude
+Claude Code
+Anthropic
+Agent
+Skill
+token
+vibe coding
+视频号
+小红书
+抖音
+口播
+自动化
