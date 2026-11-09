@@ -15,6 +15,8 @@ from pathlib import Path
 
 from PIL import Image, ImageEnhance, ImageFilter
 
+import vdp_common  # noqa: F401  —— 让 Windows 控制台输出用 UTF-8
+
 
 def fit(im, ratio, mode, width):
     rw, rh = ratio
